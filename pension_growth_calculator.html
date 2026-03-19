@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pension Growth Calculator</title>
+  <style>
+    :root {
+      --bg: #f4efe6;
+      --panel: rgba(255, 250, 240, 0.88);
+      --panel-strong: rgba(255, 247, 232, 0.96);
+      --text: #1d2a2f;
+      --muted: #53656b;
+      --line: rgba(22, 57, 61, 0.12);
+      --accent: #0b6e69;
+      --accent-soft: rgba(11, 110, 105, 0.14);
+      --accent-2: #d97b2d;
+      --accent-3: #19556e;
+      --shadow: 0 24px 60px rgba(20, 43, 48, 0.16);
+      --radius: 22px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Avenir Next", "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(217, 123, 45, 0.28), transparent 32%),
+        radial-gradient(circle at top right, rgba(11, 110, 105, 0.22), transparent 30%),
+        linear-gradient(160deg, #f8f3ea 0%, #efe4d2 52%, #ecf2ee 100%);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.15) 1px, transparent 1px);
+      background-size: 36px 36px;
+      mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.35), transparent 75%);
+    }
+
+    .page {
+      width: min(1180px, calc(100% - 32px));
+      margin: 32px auto;
+      display: grid;
+      gap: 20px;
+    }
+
+    .hero,
+    .card {
+      background: var(--panel);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.55);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      padding: 28px;
+      display: grid;
+      gap: 18px;
+    }
+
+    .eyebrow {
+      margin: 0;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-size: 0.74rem;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: "Palatino Linotype", "Book Antiqua", serif;
+      font-size: clamp(2.2rem, 5vw, 4.2rem);
+      line-height: 0.98;
+      max-width: 12ch;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 68ch;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.55;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(300px, 420px) 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .hero-side {
+      display: grid;
+      gap: 20px;
+    }
+
+    .hero-span {
+      grid-column: 1 / -1;
+    }
+
+    .card {
+      padding: 22px;
+    }
+
+    .controls {
+      display: grid;
+      gap: 16px;
+      background: var(--panel-strong);
+    }
+
+    .input-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    label {
+      display: grid;
+      gap: 6px;
+      font-size: 0.92rem;
+      color: var(--muted);
+    }
+
+    input,
+    select {
+      width: 100%;
+      border: 1px solid rgba(29, 42, 47, 0.12);
+      background: rgba(255, 255, 255, 0.88);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 14px 16px;
+      font-size: 1rem;
+      transition: border-color 150ms ease, transform 150ms ease, box-shadow 150ms ease;
+    }
+
+    input:focus,
+    select:focus {
+      outline: none;
+      border-color: rgba(11, 110, 105, 0.65);
+      box-shadow: 0 0 0 5px rgba(11, 110, 105, 0.12);
+      transform: translateY(-1px);
+    }
+
+    .quick-notes {
+      display: grid;
+      gap: 10px;
+      padding: 14px;
+      background: linear-gradient(135deg, rgba(11, 110, 105, 0.08), rgba(217, 123, 45, 0.08));
+      border-radius: 18px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .metric {
+      padding: 18px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.74), rgba(255, 255, 255, 0.92));
+      border: 1px solid rgba(29, 42, 47, 0.07);
+    }
+
+    .metric .label {
+      display: block;
+      font-size: 0.84rem;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .metric strong {
+      display: block;
+      font-size: clamp(1.4rem, 2.8vw, 2rem);
+      line-height: 1.05;
+      font-weight: 700;
+    }
+
+    .metric small {
+      display: block;
+      margin-top: 10px;
+      color: var(--muted);
+    }
+
+    .visuals {
+      display: grid;
+      gap: 20px;
+    }
+
+    .chart-card {
+      display: grid;
+      gap: 14px;
+    }
+
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .chart-title {
+      margin: 0;
+      font-size: 1.1rem;
+    }
+
+    .legend {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .legend i {
+      width: 12px;
+      height: 12px;
+      border-radius: 999px;
+      display: inline-block;
+    }
+
+    canvas {
+      width: 100%;
+      min-height: 380px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(244, 239, 230, 0.96));
+      border: 1px solid rgba(29, 42, 47, 0.08);
+    }
+
+    .table-wrap {
+      overflow: auto;
+      border-radius: 18px;
+      border: 1px solid rgba(29, 42, 47, 0.08);
+      background: rgba(255, 255, 255, 0.72);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 640px;
+    }
+
+    th,
+    td {
+      padding: 12px 14px;
+      text-align: right;
+      border-bottom: 1px solid rgba(29, 42, 47, 0.08);
+      font-variant-numeric: tabular-nums;
+    }
+
+    th:first-child,
+    td:first-child {
+      text-align: left;
+    }
+
+    th {
+      position: sticky;
+      top: 0;
+      background: rgba(250, 244, 235, 0.96);
+      color: var(--muted);
+      font-size: 0.84rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    tbody tr:hover {
+      background: rgba(11, 110, 105, 0.05);
+    }
+
+    .footnote {
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    @media (max-width: 980px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .metrics {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .page {
+        width: min(100% - 20px, 1180px);
+        margin: 20px auto;
+      }
+
+      .hero,
+      .card {
+        padding: 18px;
+      }
+
+      .input-grid {
+        grid-template-columns: 1fr;
+      }
+
+      canvas {
+        min-height: 300px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="page">
+    <section class="hero">
+      <p class="eyebrow">Retirement Projection</p>
+      <div class="hero-grid">
+        <div>
+          <h1>See what your pension can grow into.</h1>
+          <p>
+            Enter your current balance, expected yearly return, private monthly investing, employer or state monthly
+            pension payments, years until retirement, and expected years in retirement.
+            The calculator compounds monthly, can include annual fees, estimates retirement payouts after tax, and keeps
+            the remaining money growing while you draw it down.
+          </p>
+        </div>
+
+        <div class="hero-side">
+          <section class="card controls" aria-label="Calculator settings">
+            <div class="input-grid">
+              <label>
+                Start amount
+                <input id="startAmount" type="number" min="0" step="1000" value="250000" inputmode="decimal">
+              </label>
+              <label>
+                Expected annual growth (%)
+                <input id="annualGrowth" type="number" step="0.1" value="7" inputmode="decimal">
+              </label>
+              <label>
+                Monthly private investment
+                <input id="monthlyContribution" type="number" min="0" step="100" value="3500" inputmode="decimal">
+              </label>
+              <label>
+                Yearly increase in monthly private investment (%)
+                <input id="contributionGrowth" type="number" min="0" step="0.1" value="1.5" inputmode="decimal">
+              </label>
+              <label>
+                Monthly employer/state contribution
+                <input id="monthlyEmployerContribution" type="number" min="0" step="100" value="0" inputmode="decimal">
+              </label>
+              <label>
+                Yearly increase in employer/state contribution (%)
+                <input id="employerContributionGrowth" type="number" min="0" step="0.1" value="0" inputmode="decimal">
+              </label>
+              <label>
+                Years until retirement
+                <input id="years" type="number" min="1" max="80" step="1" value="30" inputmode="numeric">
+              </label>
+              <label>
+                Years in retirement
+                <input id="retirementYears" type="number" min="1" max="60" step="1" value="25" inputmode="numeric">
+              </label>
+              <label>
+                Annual inflation (%)
+                <input id="inflation" type="number" min="0" step="0.1" value="2" inputmode="decimal">
+              </label>
+              <label>
+                Annual fee drag (%)
+                <input id="annualFee" type="number" min="0" step="0.1" value="0" inputmode="decimal">
+              </label>
+              <label>
+                Withdrawal tax (%)
+                <input id="withdrawalTax" type="number" min="0" max="100" step="1" value="30" inputmode="numeric">
+              </label>
+              <label>
+                Retirement payout mode
+                <select id="payoutMode">
+                  <option value="inflation-adjusted" selected>Inflation-adjusted</option>
+                  <option value="nominal">Nominal</option>
+                </select>
+              </label>
+            </div>
+          </section>
+        </div>
+
+        <section class="card quick-notes hero-span" aria-label="Model assumptions">
+          <strong>Model assumptions</strong>
+          <span>Growth is converted from annual return into an equivalent monthly rate and reduced by the annual fee
+            drag.</span>
+          <span>Private and employer/state monthly contributions are added at the end of each month.</span>
+          <span>Private and employer/state contributions can each have their own yearly increase rate.</span>
+          <span>Retirement withdrawals are taken monthly while the remaining balance keeps compounding.</span>
+          <span>Retirement payouts can stay nominal or rise with inflation to preserve purchasing power.</span>
+          <span>Withdrawal tax is used to show the spendable amount after tax.</span>
+          <span>Inflation-adjusted value shows what the future balance is worth in today’s money.</span>
+        </section>
+      </div>
+    </section>
+
+    <section class="metrics" aria-label="Projection summary">
+      <article class="metric">
+        <span class="label">Projected final balance</span>
+        <strong id="finalBalance">0</strong>
+        <small id="finalBalanceNote">Nominal value at retirement</small>
+      </article>
+      <article class="metric">
+        <span class="label">Total contributions</span>
+        <strong id="totalContributions">0</strong>
+        <small id="contributionsNote">Start amount + private and employer/state contributions</small>
+      </article>
+      <article class="metric">
+        <span class="label">Investment growth</span>
+        <strong id="totalGrowth">0</strong>
+        <small id="growthShare">0% of final balance</small>
+      </article>
+      <article class="metric">
+        <span class="label">Estimated monthly payout after tax</span>
+        <strong id="monthlyWithdrawal">0</strong>
+        <small id="withdrawalNote">Starting monthly payout at retirement</small>
+      </article>
+    </section>
+
+    <section class="visuals">
+      <section class="card">
+        <div class="chart-header">
+          <div>
+            <h2 class="chart-title">Retirement year comparison</h2>
+            <p class="footnote">Uses the current assumptions and compares retiring 5 years earlier through 5 years later
+              than the selected retirement year.</p>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Offset</th>
+                <th>Retirement in</th>
+                <th>Projected final balance</th>
+                <th>Total contributions</th>
+                <th>Investment growth</th>
+                <th>Estimated monthly payout after tax</th>
+              </tr>
+            </thead>
+            <tbody id="comparisonBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card chart-card">
+        <div class="chart-header">
+          <div>
+            <h2 class="chart-title">Balance over time</h2>
+            <p class="footnote">The teal line is total balance. The orange line is how much you put in. The blue line
+              adjusts the balance for inflation.</p>
+          </div>
+          <div class="legend" aria-hidden="true">
+            <span><i style="background: var(--accent);"></i>Total balance</span>
+            <span><i style="background: var(--accent-2);"></i>Total contributions</span>
+            <span><i style="background: var(--accent-3);"></i>Inflation-adjusted balance</span>
+          </div>
+        </div>
+        <canvas id="chart" width="960" height="420"></canvas>
+      </section>
+
+      <section class="card">
+        <div class="chart-header">
+          <div>
+            <h2 class="chart-title">Year-by-year view</h2>
+            <p class="footnote">Useful for checking when compounding starts dominating your own contributions.</p>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Year</th>
+                <th>Balance</th>
+                <th>Contributions</th>
+                <th>Total Contributions</th>
+                <th>Growth</th>
+                <th>Today’s value</th>
+              </tr>
+            </thead>
+            <tbody id="resultsBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card chart-card">
+        <div class="chart-header">
+          <div>
+            <h2 class="chart-title">Retirement drawdown</h2>
+            <p class="footnote">Green shows remaining pension balance after retirement starts. Orange shows cumulative
+              money received after tax. The payout mode can stay nominal or rise with inflation while the remaining
+              pension continues to grow.</p>
+          </div>
+          <div class="legend" aria-hidden="true">
+            <span><i style="background: var(--accent);"></i>Remaining balance</span>
+            <span><i style="background: var(--accent-2);"></i>Cumulative after-tax withdrawn</span>
+            <span><i style="background: var(--accent-3);"></i>Today’s value of balance</span>
+          </div>
+        </div>
+        <canvas id="drawdownChart" width="960" height="420"></canvas>
+      </section>
+
+      <section class="card">
+        <div class="chart-header">
+          <div>
+            <h2 class="chart-title">Retirement year-by-year</h2>
+            <p class="footnote">Shows how much remains each year if you withdraw the calculated monthly amount for your
+              chosen retirement length.</p>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Retirement year</th>
+                <th>Remaining balance</th>
+                <th>Total withdrawn after tax</th>
+                <th>Monthly payout after tax</th>
+                <th>Withdrawn this year after tax</th>
+                <th>Today’s value</th>
+              </tr>
+            </thead>
+            <tbody id="drawdownBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    const fields = {
+      startAmount: document.getElementById("startAmount"),
+      annualGrowth: document.getElementById("annualGrowth"),
+      monthlyContribution: document.getElementById("monthlyContribution"),
+      monthlyEmployerContribution: document.getElementById("monthlyEmployerContribution"),
+      employerContributionGrowth: document.getElementById("employerContributionGrowth"),
+      years: document.getElementById("years"),
+      retirementYears: document.getElementById("retirementYears"),
+      inflation: document.getElementById("inflation"),
+      contributionGrowth: document.getElementById("contributionGrowth"),
+      annualFee: document.getElementById("annualFee"),
+      withdrawalTax: document.getElementById("withdrawalTax"),
+      payoutMode: document.getElementById("payoutMode")
+    };
+
+    const outputs = {
+      finalBalance: document.getElementById("finalBalance"),
+      totalContributions: document.getElementById("totalContributions"),
+      totalGrowth: document.getElementById("totalGrowth"),
+      monthlyWithdrawal: document.getElementById("monthlyWithdrawal"),
+      finalBalanceNote: document.getElementById("finalBalanceNote"),
+      contributionsNote: document.getElementById("contributionsNote"),
+      growthShare: document.getElementById("growthShare"),
+      withdrawalNote: document.getElementById("withdrawalNote"),
+      comparisonBody: document.getElementById("comparisonBody"),
+      resultsBody: document.getElementById("resultsBody"),
+      drawdownBody: document.getElementById("drawdownBody")
+    };
+
+    const accumulationCanvas = document.getElementById("chart");
+    const drawdownCanvas = document.getElementById("drawdownChart");
+    const storageKey = "pension-growth-calculator";
+    const formatter = new Intl.NumberFormat(undefined, {
+      maximumFractionDigits: 0
+    });
+
+    function formatMoney(value) {
+      return formatter.format(value);
+    }
+
+    function getNumber(field, fallback) {
+      const value = Number.parseFloat(field.value);
+      return Number.isFinite(value) ? value : fallback;
+    }
+
+    function getFieldState() {
+      return Object.fromEntries(Object.entries(fields).map(([key, field]) => [key, field.value]));
+    }
+
+    function saveFieldState() {
+      const payload = encodeURIComponent(JSON.stringify(getFieldState()));
+      document.cookie = `${storageKey}=${payload}; max-age=31536000; path=/; samesite=lax`;
+
+      try {
+        window.localStorage.setItem(storageKey, JSON.stringify(getFieldState()));
+      } catch {
+        // Ignore storage failures and continue without persistence.
+      }
+    }
+
+    function readCookie(name) {
+      const cookiePrefix = `${name}=`;
+      const cookie = document.cookie
+        .split("; ")
+        .find((entry) => entry.startsWith(cookiePrefix));
+
+      return cookie ? cookie.slice(cookiePrefix.length) : "";
+    }
+
+    function restoreFieldState() {
+      let savedState = null;
+
+      try {
+        const cookieValue = readCookie(storageKey);
+        if (cookieValue) {
+          savedState = JSON.parse(decodeURIComponent(cookieValue));
+        }
+      } catch {
+        savedState = null;
+      }
+
+      if (!savedState) {
+        try {
+          const storedValue = window.localStorage.getItem(storageKey);
+          if (storedValue) {
+            savedState = JSON.parse(storedValue);
+          }
+        } catch {
+          savedState = null;
+        }
+      }
+
+      if (!savedState || typeof savedState !== "object") {
+        return;
+      }
+
+      Object.entries(fields).forEach(([key, field]) => {
+        if (Object.prototype.hasOwnProperty.call(savedState, key)) {
+          field.value = savedState[key];
+        }
+      });
+    }
+
+    function calculateProjection(yearsOverride) {
+      const startAmount = Math.max(0, getNumber(fields.startAmount, 0));
+      const annualGrowth = getNumber(fields.annualGrowth, 0) / 100;
+      const monthlyPrivateContributionBase = Math.max(0, getNumber(fields.monthlyContribution, 0));
+      const monthlyEmployerContributionBase = Math.max(0, getNumber(fields.monthlyEmployerContribution, 0));
+      const years = Math.max(1, Math.round(yearsOverride ?? getNumber(fields.years, 1)));
+      const retirementYears = Math.max(1, Math.round(getNumber(fields.retirementYears, 1)));
+      const inflation = Math.max(0, getNumber(fields.inflation, 0) / 100);
+      const contributionGrowth = Math.max(0, getNumber(fields.contributionGrowth, 0) / 100);
+      const employerContributionGrowth = Math.max(0, getNumber(fields.employerContributionGrowth, 0) / 100);
+      const annualFee = Math.max(0, getNumber(fields.annualFee, 0) / 100);
+      const withdrawalTax = Math.min(1, Math.max(0, getNumber(fields.withdrawalTax, 0) / 100));
+      const payoutMode = fields.payoutMode.value;
+
+      const monthlyGrowthFactor = Math.pow(1 + annualGrowth, 1 / 12);
+      const monthlyFeeFactor = Math.pow(1 + annualFee, 1 / 12);
+      const monthlyNetGrowthFactor = monthlyGrowthFactor / monthlyFeeFactor;
+      const monthlyGrowthRate = monthlyNetGrowthFactor - 1;
+      const monthlyInflationRate = Math.pow(1 + inflation, 1 / 12) - 1;
+      const payoutGrowthRate = payoutMode === "inflation-adjusted" ? monthlyInflationRate : 0;
+
+      let balance = startAmount;
+      let totalContributions = startAmount;
+      let monthlyPrivateContribution = monthlyPrivateContributionBase;
+      let monthlyEmployerContribution = monthlyEmployerContributionBase;
+      const yearlyRows = [];
+
+      for (let year = 1; year <= years; year += 1) {
+        const balanceAtYearStart = balance;
+        let annualContributions = 0;
+
+        for (let month = 0; month < 12; month += 1) {
+          const monthlyContribution = monthlyPrivateContribution + monthlyEmployerContribution;
+          balance *= 1 + monthlyGrowthRate;
+          balance += monthlyContribution;
+          annualContributions += monthlyContribution;
+          totalContributions += monthlyContribution;
+        }
+
+        const inflationAdjustedBalance = balance / Math.pow(1 + inflation, year);
+        const annualGrowthAmount = balance - balanceAtYearStart - annualContributions;
+
+        yearlyRows.push({
+          year,
+          balance,
+          contributions: annualContributions,
+          totalContributions,
+          growth: balance - totalContributions,
+          annualGrowth: annualGrowthAmount,
+          inflationAdjustedBalance
+        });
+
+        monthlyPrivateContribution *= 1 + contributionGrowth;
+        monthlyEmployerContribution *= 1 + employerContributionGrowth;
+      }
+
+      const retirementStartBalance = yearlyRows[yearlyRows.length - 1].balance;
+      const retirementMonths = retirementYears * 12;
+      let monthlyGrossWithdrawal;
+
+      if (Math.abs(monthlyGrowthRate - payoutGrowthRate) < 1e-9) {
+        monthlyGrossWithdrawal = retirementStartBalance * (1 + monthlyGrowthRate) / retirementMonths;
+      } else {
+        const payoutRatio = (1 + payoutGrowthRate) / (1 + monthlyGrowthRate);
+        monthlyGrossWithdrawal = retirementStartBalance * (monthlyGrowthRate - payoutGrowthRate)
+          / (1 - Math.pow(payoutRatio, retirementMonths));
+      }
+
+      let retirementBalance = retirementStartBalance;
+      let cumulativeNetWithdrawn = 0;
+      let currentMonthlyGrossWithdrawal = monthlyGrossWithdrawal;
+      const drawdownRows = [];
+
+      for (let year = 1; year <= retirementYears; year += 1) {
+        let netWithdrawnThisYear = 0;
+        const monthlyNetPayoutAtYearStart = currentMonthlyGrossWithdrawal * (1 - withdrawalTax);
+
+        for (let month = 0; month < 12; month += 1) {
+          retirementBalance *= 1 + monthlyGrowthRate;
+          const grossWithdrawal = Math.min(currentMonthlyGrossWithdrawal, retirementBalance);
+          retirementBalance -= grossWithdrawal;
+
+          const netWithdrawal = grossWithdrawal * (1 - withdrawalTax);
+          cumulativeNetWithdrawn += netWithdrawal;
+          netWithdrawnThisYear += netWithdrawal;
+          currentMonthlyGrossWithdrawal *= 1 + payoutGrowthRate;
+        }
+
+        const inflationAdjustedBalance = retirementBalance / Math.pow(1 + inflation, years + year);
+
+        drawdownRows.push({
+          year,
+          balance: retirementBalance,
+          cumulativeNetWithdrawn,
+          monthlyNetPayout: monthlyNetPayoutAtYearStart,
+          netWithdrawnThisYear,
+          inflationAdjustedBalance
+        });
+      }
+
+      const finalMonthlyNetWithdrawal = (currentMonthlyGrossWithdrawal / (1 + payoutGrowthRate)) * (1 - withdrawalTax);
+
+      return {
+        accumulationRows: yearlyRows,
+        drawdownRows,
+        monthlyNetWithdrawal: monthlyGrossWithdrawal * (1 - withdrawalTax),
+        finalMonthlyNetWithdrawal,
+        years,
+        payoutMode,
+        withdrawalTax,
+        annualFee
+      };
+    }
+
+    function buildComparisonRows(selectedYears) {
+      const rows = [];
+
+      for (let years = Math.max(1, selectedYears - 5); years <= selectedYears + 5; years += 1) {
+        const projection = calculateProjection(years);
+        const lastRow = projection.accumulationRows[projection.accumulationRows.length - 1];
+
+        rows.push({
+          years,
+          finalBalance: lastRow.balance,
+          totalContributions: lastRow.totalContributions,
+          investmentGrowth: lastRow.growth,
+          monthlyNetWithdrawal: projection.monthlyNetWithdrawal
+        });
+      }
+
+      return rows;
+    }
+
+    function drawChart(canvas, rows, series, labelAccessor) {
+      const context = canvas.getContext("2d");
+      const width = canvas.width;
+      const height = canvas.height;
+      const padding = { top: 28, right: 20, bottom: 38, left: 76 };
+      const plotWidth = width - padding.left - padding.right;
+      const plotHeight = height - padding.top - padding.bottom;
+      const maxValue = Math.max(...rows.flatMap((row) => {
+        return series.map((entry) => row[entry.key]);
+      }), 1);
+
+      context.clearRect(0, 0, width, height);
+
+      const gridLines = 5;
+      context.strokeStyle = "rgba(29, 42, 47, 0.12)";
+      context.lineWidth = 1;
+      context.font = "13px Avenir Next, Segoe UI, sans-serif";
+      context.fillStyle = "#53656b";
+
+      for (let index = 0; index <= gridLines; index += 1) {
+        const ratio = index / gridLines;
+        const y = padding.top + plotHeight - ratio * plotHeight;
+        const value = maxValue * ratio;
+
+        context.beginPath();
+        context.moveTo(padding.left, y);
+        context.lineTo(width - padding.right, y);
+        context.stroke();
+
+        context.textAlign = "right";
+        context.textBaseline = "middle";
+        context.fillText(formatMoney(value), padding.left - 10, y);
+      }
+
+      const xStep = rows.length > 1 ? plotWidth / (rows.length - 1) : plotWidth;
+      rows.forEach((row, index) => {
+        const x = padding.left + index * xStep;
+        context.beginPath();
+        context.moveTo(x, padding.top);
+        context.lineTo(x, height - padding.bottom);
+        context.strokeStyle = "rgba(29, 42, 47, 0.04)";
+        context.stroke();
+
+        context.fillStyle = "#53656b";
+        context.textAlign = "center";
+        context.textBaseline = "top";
+        context.fillText(labelAccessor(row), x, height - padding.bottom + 10);
+      });
+
+      series.forEach((entry) => {
+        context.beginPath();
+        rows.forEach((row, index) => {
+          const x = padding.left + index * xStep;
+          const y = padding.top + plotHeight - (row[entry.key] / maxValue) * plotHeight;
+          if (index === 0) {
+            context.moveTo(x, y);
+          } else {
+            context.lineTo(x, y);
+          }
+        });
+
+        context.strokeStyle = entry.color;
+        context.lineWidth = 3;
+        context.lineJoin = "round";
+        context.lineCap = "round";
+        context.stroke();
+      });
+    }
+
+    function renderTable(target, rows, columns) {
+      target.innerHTML = rows.map((row) => {
+        return `
+          <tr>
+            ${columns.map((column) => {
+          if (column.render) {
+            return `<td>${column.render(row)}</td>`;
+          }
+
+          return `<td>${column.formatter(row[column.key])}</td>`;
+        }).join("")}
+          </tr>
+        `;
+      }).join("");
+    }
+
+    function render() {
+      const projection = calculateProjection();
+      const rows = projection.accumulationRows;
+      const lastRow = rows[rows.length - 1];
+      const growthShare = lastRow.balance > 0 ? (lastRow.growth / lastRow.balance) * 100 : 0;
+      const comparisonRows = buildComparisonRows(projection.years);
+
+      outputs.finalBalance.textContent = formatMoney(lastRow.balance);
+      outputs.totalContributions.textContent = formatMoney(lastRow.totalContributions);
+      outputs.totalGrowth.textContent = formatMoney(lastRow.growth);
+      outputs.monthlyWithdrawal.textContent = formatMoney(projection.monthlyNetWithdrawal);
+      outputs.finalBalanceNote.textContent = `About ${formatMoney(lastRow.inflationAdjustedBalance)} in today\'s money after ${projection.annualFee.toLocaleString(undefined, { style: "percent", maximumFractionDigits: 1 })} annual fees`;
+      outputs.contributionsNote.textContent = `Includes the starting amount of ${formatMoney(getNumber(fields.startAmount, 0))}, private investing, and employer/state contributions`;
+      outputs.growthShare.textContent = `${growthShare.toFixed(1)}% of the final balance came from net growth after fees`;
+      outputs.withdrawalNote.textContent = projection.payoutMode === "inflation-adjusted"
+        ? `Net payout starts at ${formatMoney(projection.monthlyNetWithdrawal)} per month and grows to about ${formatMoney(projection.finalMonthlyNetWithdrawal)} by the last year, using ${(projection.withdrawalTax * 100).toFixed(0)}% tax`
+        : `Net payout stays around ${formatMoney(projection.monthlyNetWithdrawal)} per month with ${(projection.withdrawalTax * 100).toFixed(0)}% tax`;
+
+      drawChart(
+        accumulationCanvas,
+        rows,
+        [
+          { key: "balance", color: "#0b6e69" },
+          { key: "totalContributions", color: "#d97b2d" },
+          { key: "inflationAdjustedBalance", color: "#19556e" }
+        ],
+        (row) => String(row.year)
+      );
+
+      drawChart(
+        drawdownCanvas,
+        projection.drawdownRows,
+        [
+          { key: "balance", color: "#0b6e69" },
+          { key: "cumulativeNetWithdrawn", color: "#d97b2d" },
+          { key: "inflationAdjustedBalance", color: "#19556e" }
+        ],
+        (row) => String(row.year)
+      );
+
+      renderTable(outputs.comparisonBody, comparisonRows, [
+        {
+          render: (row) => {
+            const offset = row.years - projection.years;
+            return offset > 0 ? `(+${offset})` : `(${offset})`;
+          }
+        },
+        {
+          render: (row) => `${row.years} years`
+        },
+        { key: "finalBalance", formatter: formatMoney },
+        { key: "totalContributions", formatter: formatMoney },
+        { key: "investmentGrowth", formatter: formatMoney },
+        { key: "monthlyNetWithdrawal", formatter: formatMoney }
+      ]);
+
+      renderTable(outputs.resultsBody, rows, [
+        { key: "year", formatter: (value) => String(value) },
+        { key: "balance", formatter: formatMoney },
+        { key: "contributions", formatter: formatMoney },
+        { key: "totalContributions", formatter: formatMoney },
+        {
+          render: (row) => `${formatMoney(row.growth)} (+ ${formatMoney(row.annualGrowth)})`
+        },
+        { key: "inflationAdjustedBalance", formatter: formatMoney }
+      ]);
+
+      renderTable(outputs.drawdownBody, projection.drawdownRows, [
+        { key: "year", formatter: (value) => String(value) },
+        { key: "balance", formatter: formatMoney },
+        { key: "cumulativeNetWithdrawn", formatter: formatMoney },
+        { key: "monthlyNetPayout", formatter: formatMoney },
+        { key: "netWithdrawnThisYear", formatter: formatMoney },
+        { key: "inflationAdjustedBalance", formatter: formatMoney }
+      ]);
+    }
+
+    Object.values(fields).forEach((field) => {
+      field.addEventListener("input", () => {
+        saveFieldState();
+        render();
+      });
+      field.addEventListener("change", () => {
+        saveFieldState();
+        render();
+      });
+    });
+
+    restoreFieldState();
+    render();
+  </script>
+</body>
+
+</html>
