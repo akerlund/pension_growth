@@ -13,10 +13,10 @@
       --text: #1d2a2f;
       --muted: #53656b;
       --line: rgba(22, 57, 61, 0.12);
-      --accent: #0b6e69;
+      --accent: #0f766e;
       --accent-soft: rgba(11, 110, 105, 0.14);
-      --accent-2: #d97b2d;
-      --accent-3: #19556e;
+      --accent-2: #e05263;
+      --accent-3: #2f5fe8;
       --shadow: 0 24px 60px rgba(20, 43, 48, 0.16);
       --radius: 22px;
     }
@@ -95,6 +95,10 @@
       line-height: 1.55;
     }
 
+    .hero p.hero-wide-text {
+      max-width: none;
+    }
+
     .hero-grid {
       display: grid;
       grid-template-columns: minmax(300px, 420px) 1fr;
@@ -105,6 +109,12 @@
     .hero-side {
       display: grid;
       gap: 20px;
+    }
+
+    .hero-main {
+      display: grid;
+      gap: 20px;
+      align-content: start;
     }
 
     .hero-span {
@@ -166,7 +176,7 @@
 
     .metrics {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
       gap: 14px;
     }
 
@@ -335,7 +345,24 @@
       <div class="hero-grid">
         <div>
           <h1>See what your pension can grow into.</h1>
-          <p>
+        </div>
+
+        <div class="hero-side">
+          <section class="card quick-notes" aria-label="Model assumptions">
+            <strong>Model assumptions</strong>
+            <span>Growth is converted from annual return into an equivalent monthly rate and reduced by the annual fee
+              drag.</span>
+            <span>Private and employer/state monthly contributions are added at the end of each month.</span>
+            <span>Private and employer/state contributions can each have their own yearly increase rate.</span>
+            <span>Retirement withdrawals are taken monthly while the remaining balance keeps compounding.</span>
+            <span>Retirement payouts can stay nominal or rise with inflation to preserve purchasing power.</span>
+            <span>Withdrawal tax is used to show the spendable amount after tax.</span>
+            <span>Inflation-adjusted value shows what the future balance is worth in today’s money.</span>
+          </section>
+        </div>
+
+        <div class="hero-span">
+          <p class="hero-wide-text">
             Enter your current balance, expected yearly return, private monthly investing, employer or state monthly
             pension payments, years until retirement, and expected years in retirement.
             The calculator compounds monthly, can include annual fees, estimates retirement payouts after tax, and keeps
@@ -343,74 +370,60 @@
           </p>
         </div>
 
-        <div class="hero-side">
-          <section class="card controls" aria-label="Calculator settings">
-            <div class="input-grid">
-              <label>
-                Start amount
-                <input id="startAmount" type="number" min="0" step="1000" value="250000" inputmode="decimal">
-              </label>
-              <label>
-                Expected annual growth (%)
-                <input id="annualGrowth" type="number" step="0.1" value="7" inputmode="decimal">
-              </label>
-              <label>
-                Monthly private investment
-                <input id="monthlyContribution" type="number" min="0" step="100" value="3500" inputmode="decimal">
-              </label>
-              <label>
-                Yearly increase in monthly private investment (%)
-                <input id="contributionGrowth" type="number" min="0" step="0.1" value="1.5" inputmode="decimal">
-              </label>
-              <label>
-                Monthly employer/state contribution
-                <input id="monthlyEmployerContribution" type="number" min="0" step="100" value="0" inputmode="decimal">
-              </label>
-              <label>
-                Yearly increase in employer/state contribution (%)
-                <input id="employerContributionGrowth" type="number" min="0" step="0.1" value="0" inputmode="decimal">
-              </label>
-              <label>
-                Years until retirement
-                <input id="years" type="number" min="1" max="80" step="1" value="30" inputmode="numeric">
-              </label>
-              <label>
-                Years in retirement
-                <input id="retirementYears" type="number" min="1" max="60" step="1" value="25" inputmode="numeric">
-              </label>
-              <label>
-                Annual inflation (%)
-                <input id="inflation" type="number" min="0" step="0.1" value="2" inputmode="decimal">
-              </label>
-              <label>
-                Annual fee drag (%)
-                <input id="annualFee" type="number" min="0" step="0.1" value="0" inputmode="decimal">
-              </label>
-              <label>
-                Withdrawal tax (%)
-                <input id="withdrawalTax" type="number" min="0" max="100" step="1" value="30" inputmode="numeric">
-              </label>
-              <label>
-                Retirement payout mode
-                <select id="payoutMode">
-                  <option value="inflation-adjusted" selected>Inflation-adjusted</option>
-                  <option value="nominal">Nominal</option>
-                </select>
-              </label>
-            </div>
-          </section>
-        </div>
-
-        <section class="card quick-notes hero-span" aria-label="Model assumptions">
-          <strong>Model assumptions</strong>
-          <span>Growth is converted from annual return into an equivalent monthly rate and reduced by the annual fee
-            drag.</span>
-          <span>Private and employer/state monthly contributions are added at the end of each month.</span>
-          <span>Private and employer/state contributions can each have their own yearly increase rate.</span>
-          <span>Retirement withdrawals are taken monthly while the remaining balance keeps compounding.</span>
-          <span>Retirement payouts can stay nominal or rise with inflation to preserve purchasing power.</span>
-          <span>Withdrawal tax is used to show the spendable amount after tax.</span>
-          <span>Inflation-adjusted value shows what the future balance is worth in today’s money.</span>
+        <section class="card controls hero-span" aria-label="Calculator settings">
+          <div class="input-grid">
+            <label>
+              Start amount
+              <input id="startAmount" type="number" min="0" step="1000" value="250000" inputmode="decimal">
+            </label>
+            <label>
+              Expected annual growth (%)
+              <input id="annualGrowth" type="number" step="0.1" value="7" inputmode="decimal">
+            </label>
+            <label>
+              Monthly private investment
+              <input id="monthlyContribution" type="number" min="0" step="100" value="3500" inputmode="decimal">
+            </label>
+            <label>
+              Yearly increase in monthly private investment (%)
+              <input id="contributionGrowth" type="number" min="0" step="0.1" value="2" inputmode="decimal">
+            </label>
+            <label>
+              Monthly employer/state contribution
+              <input id="monthlyEmployerContribution" type="number" min="0" step="100" value="0" inputmode="decimal">
+            </label>
+            <label>
+              Yearly increase in employer/state contribution (%)
+              <input id="employerContributionGrowth" type="number" min="0" step="0.1" value="2" inputmode="decimal">
+            </label>
+            <label>
+              Years until retirement
+              <input id="years" type="number" min="1" max="80" step="1" value="20" inputmode="numeric">
+            </label>
+            <label>
+              Years in retirement
+              <input id="retirementYears" type="number" min="1" max="60" step="1" value="25" inputmode="numeric">
+            </label>
+            <label>
+              Annual inflation (%)
+              <input id="inflation" type="number" min="0" step="0.1" value="2" inputmode="decimal">
+            </label>
+            <label>
+              Annual fee drag (%)
+              <input id="annualFee" type="number" min="0" step="0.01" value="0.2" inputmode="decimal">
+            </label>
+            <label>
+              Withdrawal tax (%)
+              <input id="withdrawalTax" type="number" min="0" max="100" step="1" value="30" inputmode="numeric">
+            </label>
+            <label>
+              Retirement payout mode
+              <select id="payoutMode">
+                <option value="inflation-adjusted" selected>Inflation-adjusted</option>
+                <option value="nominal">Nominal</option>
+              </select>
+            </label>
+          </div>
         </section>
       </div>
     </section>
@@ -435,6 +448,11 @@
         <span class="label">Estimated monthly payout after tax</span>
         <strong id="monthlyWithdrawal">0</strong>
         <small id="withdrawalNote">Starting monthly payout at retirement</small>
+      </article>
+      <article class="metric">
+        <span class="label">Total fees paid</span>
+        <strong id="totalFeesPaid">0</strong>
+        <small id="feesPaidNote">Accumulation and retirement fee drag combined</small>
       </article>
     </section>
 
@@ -468,8 +486,9 @@
         <div class="chart-header">
           <div>
             <h2 class="chart-title">Balance over time</h2>
-            <p class="footnote">The teal line is total balance. The orange line is how much you put in. The blue line
-              adjusts the balance for inflation.</p>
+            <p class="footnote">Total balance = start amount + all contributions + net investment growth after fees.
+              Total contributions is the cumulative amount you paid in (start + private + employer/state).
+              Inflation-adjusted balance converts the nominal balance into today’s purchasing power.</p>
           </div>
           <div class="legend" aria-hidden="true">
             <span><i style="background: var(--accent);"></i>Total balance</span>
@@ -510,7 +529,7 @@
             <h2 class="chart-title">Retirement drawdown</h2>
             <p class="footnote">Green shows remaining pension balance after retirement starts. Orange shows cumulative
               money received after tax. The payout mode can stay nominal or rise with inflation while the remaining
-              pension continues to grow.</p>
+              pension continues to grow. Year 0 is the retirement start point.</p>
           </div>
           <div class="legend" aria-hidden="true">
             <span><i style="background: var(--accent);"></i>Remaining balance</span>
@@ -533,7 +552,7 @@
           <table>
             <thead>
               <tr>
-                <th>Retirement year</th>
+                <th>Retirement year (0 = start)</th>
                 <th>Remaining balance</th>
                 <th>Total withdrawn after tax</th>
                 <th>Monthly payout after tax</th>
@@ -573,6 +592,8 @@
       contributionsNote: document.getElementById("contributionsNote"),
       growthShare: document.getElementById("growthShare"),
       withdrawalNote: document.getElementById("withdrawalNote"),
+      totalFeesPaid: document.getElementById("totalFeesPaid"),
+      feesPaidNote: document.getElementById("feesPaidNote"),
       comparisonBody: document.getElementById("comparisonBody"),
       resultsBody: document.getElementById("resultsBody"),
       drawdownBody: document.getElementById("drawdownBody")
@@ -581,6 +602,7 @@
     const accumulationCanvas = document.getElementById("chart");
     const drawdownCanvas = document.getElementById("drawdownChart");
     const storageKey = "pension-growth-calculator";
+    const chartInteractionState = new WeakMap();
     const formatter = new Intl.NumberFormat(undefined, {
       maximumFractionDigits: 0
     });
@@ -677,7 +699,18 @@
       let totalContributions = startAmount;
       let monthlyPrivateContribution = monthlyPrivateContributionBase;
       let monthlyEmployerContribution = monthlyEmployerContributionBase;
+      let totalFeesAccumulation = 0;
       const yearlyRows = [];
+
+      yearlyRows.push({
+        year: 0,
+        balance,
+        contributions: 0,
+        totalContributions,
+        growth: balance - totalContributions,
+        annualGrowth: 0,
+        inflationAdjustedBalance: balance
+      });
 
       for (let year = 1; year <= years; year += 1) {
         const balanceAtYearStart = balance;
@@ -685,7 +718,10 @@
 
         for (let month = 0; month < 12; month += 1) {
           const monthlyContribution = monthlyPrivateContribution + monthlyEmployerContribution;
-          balance *= 1 + monthlyGrowthRate;
+          const grossBalanceBeforeFee = balance * monthlyGrowthFactor;
+          const netBalanceAfterFee = grossBalanceBeforeFee / monthlyFeeFactor;
+          totalFeesAccumulation += grossBalanceBeforeFee - netBalanceAfterFee;
+          balance = netBalanceAfterFee;
           balance += monthlyContribution;
           annualContributions += monthlyContribution;
           totalContributions += monthlyContribution;
@@ -723,14 +759,27 @@
       let retirementBalance = retirementStartBalance;
       let cumulativeNetWithdrawn = 0;
       let currentMonthlyGrossWithdrawal = monthlyGrossWithdrawal;
+      let totalFeesRetirement = 0;
       const drawdownRows = [];
+
+      drawdownRows.push({
+        year: 0,
+        balance: retirementBalance,
+        cumulativeNetWithdrawn,
+        monthlyNetPayout: monthlyGrossWithdrawal * (1 - withdrawalTax),
+        netWithdrawnThisYear: 0,
+        inflationAdjustedBalance: retirementBalance / Math.pow(1 + inflation, years)
+      });
 
       for (let year = 1; year <= retirementYears; year += 1) {
         let netWithdrawnThisYear = 0;
         const monthlyNetPayoutAtYearStart = currentMonthlyGrossWithdrawal * (1 - withdrawalTax);
 
         for (let month = 0; month < 12; month += 1) {
-          retirementBalance *= 1 + monthlyGrowthRate;
+          const grossBalanceBeforeFee = retirementBalance * monthlyGrowthFactor;
+          const netBalanceAfterFee = grossBalanceBeforeFee / monthlyFeeFactor;
+          totalFeesRetirement += grossBalanceBeforeFee - netBalanceAfterFee;
+          retirementBalance = netBalanceAfterFee;
           const grossWithdrawal = Math.min(currentMonthlyGrossWithdrawal, retirementBalance);
           retirementBalance -= grossWithdrawal;
 
@@ -757,6 +806,9 @@
       return {
         accumulationRows: yearlyRows,
         drawdownRows,
+        totalFeesAccumulation,
+        totalFeesRetirement,
+        totalFeesPaid: totalFeesAccumulation + totalFeesRetirement,
         monthlyNetWithdrawal: monthlyGrossWithdrawal * (1 - withdrawalTax),
         finalMonthlyNetWithdrawal,
         years,
@@ -852,6 +904,129 @@
         context.lineCap = "round";
         context.stroke();
       });
+
+      if (!chartInteractionState.has(canvas)) {
+        chartInteractionState.set(canvas, { hoveredIndex: null });
+      }
+
+      const state = chartInteractionState.get(canvas);
+      if (!canvas.dataset.interactive) {
+        canvas.addEventListener("mousemove", (event) => {
+          const rect = canvas.getBoundingClientRect();
+          const scaleX = canvas.width / rect.width;
+          const x = (event.clientX - rect.left) * scaleX;
+          if (x < padding.left || x > width - padding.right) {
+            state.hoveredIndex = null;
+            drawChart(canvas, rows, series, labelAccessor);
+            return;
+          }
+
+          const rawIndex = Math.round((x - padding.left) / xStep);
+          state.hoveredIndex = Math.max(0, Math.min(rows.length - 1, rawIndex));
+          drawChart(canvas, rows, series, labelAccessor);
+        });
+
+        canvas.addEventListener("mouseleave", () => {
+          state.hoveredIndex = null;
+          drawChart(canvas, rows, series, labelAccessor);
+        });
+
+        canvas.dataset.interactive = "true";
+      }
+
+      if (state.hoveredIndex === null || state.hoveredIndex === undefined) {
+        return;
+      }
+
+      const hoverRow = rows[state.hoveredIndex];
+      const hoverX = padding.left + state.hoveredIndex * xStep;
+
+      context.save();
+      context.strokeStyle = "rgba(29, 42, 47, 0.35)";
+      context.lineWidth = 1;
+      context.setLineDash([5, 5]);
+      context.beginPath();
+      context.moveTo(hoverX, padding.top);
+      context.lineTo(hoverX, height - padding.bottom);
+      context.stroke();
+      context.setLineDash([]);
+
+      const tooltipEntries = series.map((entry) => {
+        const y = padding.top + plotHeight - (hoverRow[entry.key] / maxValue) * plotHeight;
+        const boxText = `${entry.label}: ${formatMoney(hoverRow[entry.key])}`;
+        context.font = "12px Avenir Next, Segoe UI, sans-serif";
+        const textWidth = context.measureText(boxText).width;
+        return {
+          entry,
+          y,
+          boxText,
+          boxWidth: textWidth + 14,
+          boxHeight: 20,
+          desiredY: y - 10
+        };
+      });
+
+      tooltipEntries.forEach((item) => {
+        context.fillStyle = item.entry.color;
+        context.beginPath();
+        context.arc(hoverX, item.y, 4.2, 0, Math.PI * 2);
+        context.fill();
+      });
+
+      tooltipEntries.sort((a, b) => a.desiredY - b.desiredY);
+      const minY = padding.top;
+      const maxY = height - padding.bottom;
+      const gap = 4;
+      for (let i = 0; i < tooltipEntries.length; i += 1) {
+        const prevBottom = i === 0 ? minY : tooltipEntries[i - 1].boxY + tooltipEntries[i - 1].boxHeight + gap;
+        tooltipEntries[i].boxY = Math.max(tooltipEntries[i].desiredY, prevBottom);
+      }
+
+      for (let i = tooltipEntries.length - 1; i >= 0; i -= 1) {
+        const nextTop = i === tooltipEntries.length - 1
+          ? maxY - tooltipEntries[i].boxHeight
+          : tooltipEntries[i + 1].boxY - tooltipEntries[i].boxHeight - gap;
+        tooltipEntries[i].boxY = Math.min(tooltipEntries[i].boxY, nextTop);
+      }
+
+      tooltipEntries.forEach((item) => {
+        const boxX = Math.min(width - padding.right - item.boxWidth, hoverX + 12);
+
+        context.fillStyle = "rgba(255, 255, 255, 0.94)";
+        context.strokeStyle = "rgba(29, 42, 47, 0.22)";
+        context.lineWidth = 1;
+        context.beginPath();
+        context.moveTo(boxX + 6, item.boxY);
+        context.lineTo(boxX + item.boxWidth - 6, item.boxY);
+        context.quadraticCurveTo(boxX + item.boxWidth, item.boxY, boxX + item.boxWidth, item.boxY + 6);
+        context.lineTo(boxX + item.boxWidth, item.boxY + item.boxHeight - 6);
+        context.quadraticCurveTo(boxX + item.boxWidth, item.boxY + item.boxHeight, boxX + item.boxWidth - 6, item.boxY + item.boxHeight);
+        context.lineTo(boxX + 6, item.boxY + item.boxHeight);
+        context.quadraticCurveTo(boxX, item.boxY + item.boxHeight, boxX, item.boxY + item.boxHeight - 6);
+        context.lineTo(boxX, item.boxY + 6);
+        context.quadraticCurveTo(boxX, item.boxY, boxX + 6, item.boxY);
+        context.closePath();
+        context.fill();
+        context.stroke();
+
+        context.fillStyle = "#1d2a2f";
+        context.textAlign = "left";
+        context.textBaseline = "middle";
+        context.fillText(item.boxText, boxX + 7, item.boxY + item.boxHeight / 2 + 0.5);
+      });
+
+      const xLabel = `Year ${labelAccessor(hoverRow)}`;
+      context.font = "12px Avenir Next, Segoe UI, sans-serif";
+      const labelWidth = context.measureText(xLabel).width + 12;
+      const labelX = Math.max(padding.left, Math.min(width - padding.right - labelWidth, hoverX - labelWidth / 2));
+      const labelY = padding.top + 4;
+      context.fillStyle = "rgba(29, 42, 47, 0.85)";
+      context.fillRect(labelX, labelY, labelWidth, 20);
+      context.fillStyle = "#ffffff";
+      context.textAlign = "left";
+      context.textBaseline = "middle";
+      context.fillText(xLabel, labelX + 6, labelY + 10.5);
+      context.restore();
     }
 
     function renderTable(target, rows, columns) {
@@ -881,20 +1056,22 @@
       outputs.totalContributions.textContent = formatMoney(lastRow.totalContributions);
       outputs.totalGrowth.textContent = formatMoney(lastRow.growth);
       outputs.monthlyWithdrawal.textContent = formatMoney(projection.monthlyNetWithdrawal);
+      outputs.totalFeesPaid.textContent = formatMoney(projection.totalFeesPaid);
       outputs.finalBalanceNote.textContent = `About ${formatMoney(lastRow.inflationAdjustedBalance)} in today\'s money after ${projection.annualFee.toLocaleString(undefined, { style: "percent", maximumFractionDigits: 1 })} annual fees`;
       outputs.contributionsNote.textContent = `Includes the starting amount of ${formatMoney(getNumber(fields.startAmount, 0))}, private investing, and employer/state contributions`;
       outputs.growthShare.textContent = `${growthShare.toFixed(1)}% of the final balance came from net growth after fees`;
       outputs.withdrawalNote.textContent = projection.payoutMode === "inflation-adjusted"
         ? `Net payout starts at ${formatMoney(projection.monthlyNetWithdrawal)} per month and grows to about ${formatMoney(projection.finalMonthlyNetWithdrawal)} by the last year, using ${(projection.withdrawalTax * 100).toFixed(0)}% tax`
         : `Net payout stays around ${formatMoney(projection.monthlyNetWithdrawal)} per month with ${(projection.withdrawalTax * 100).toFixed(0)}% tax`;
+      outputs.feesPaidNote.textContent = `Accumulation: ${formatMoney(projection.totalFeesAccumulation)} | Retirement: ${formatMoney(projection.totalFeesRetirement)}`;
 
       drawChart(
         accumulationCanvas,
         rows,
         [
-          { key: "balance", color: "#0b6e69" },
-          { key: "totalContributions", color: "#d97b2d" },
-          { key: "inflationAdjustedBalance", color: "#19556e" }
+          { key: "balance", color: "#0f766e", label: "Total balance" },
+          { key: "totalContributions", color: "#e05263", label: "Total contributions" },
+          { key: "inflationAdjustedBalance", color: "#2f5fe8", label: "Inflation-adjusted balance" }
         ],
         (row) => String(row.year)
       );
@@ -903,9 +1080,9 @@
         drawdownCanvas,
         projection.drawdownRows,
         [
-          { key: "balance", color: "#0b6e69" },
-          { key: "cumulativeNetWithdrawn", color: "#d97b2d" },
-          { key: "inflationAdjustedBalance", color: "#19556e" }
+          { key: "balance", color: "#0f766e", label: "Remaining balance" },
+          { key: "cumulativeNetWithdrawn", color: "#e05263", label: "Cumulative withdrawn" },
+          { key: "inflationAdjustedBalance", color: "#2f5fe8", label: "Inflation-adjusted balance" }
         ],
         (row) => String(row.year)
       );
